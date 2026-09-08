@@ -1,125 +1,153 @@
 export default async function handler(req, res) {
+  if (req.method !== "GET") {
+    return res.status(405).json({
+      error: "Method not allowed",
+    });
+  }
+
+  // Fallback values
+  let stats = {
+    githubRepos: "8",
+    githubStars: "7",
+    leetcodeCpp: "417",
+    leetcodeJava: "417",
+    leetcodeRank: "76,444",
+    leetcodeBadges: "4",
+  };
+
+  // -----------------------------
+  // GitHub
+  // -----------------------------
   try {
-    // -----------------------------
-    // GitHub Stats
-    // -----------------------------
-    const githubResponse = await fetch(
-      "https://api.github.com/users/abhi1289-gif/repos?per_page=100"
-    );
-
-    if (!githubResponse.ok) {
-      throw new Error("Failed to fetch GitHub data");
-    }
-
-    const repositories = await githubResponse.json();
-
-    const githubRepos = repositories.length;
-
-    const githubStars = repositories.reduce(
-      (total, repo) => total + repo.stargazers_count,
-      0
-    );
-
-    // -----------------------------
-    // LeetCode Stats
-    // -----------------------------
-    const leetcodeQuery = {
-      query: `
-        query userPublicProfile($username: String!) {
-          matchedUser(username: $username) {
-            profile {
-              ranking
-            }
-
-            badges {
-              id
-            }
-
-            languageProblemCount {
-              languageName
-              problemsSolved
-            }
-          }
-        }
-      `,
-      variables: {
-        username: "Abhishek_12_89",
-      },
-    };
-
-    const leetcodeResponse = await fetch(
-      "https://leetcode.com/graphql/",
+    const response = await fetch(
+      "https://api.github.com/users/abhi1289-gif/repos?per_page=100",
       {
-        method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Referer: "https://leetcode.com/",
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2026-03-10",
         },
-        body: JSON.stringify(leetcodeQuery),
       }
     );
 
-    if (!leetcodeResponse.ok) {
-      throw new Error("Failed to fetch LeetCode data");
+    if (response.ok) {
+      const repos = await response.json();
+
+      stats.githubRepos = String(repos.length);
+
+      stats.githubStars = String(
+        repos.reduce(
+          (total, repo) => total + (repo.stargazers_count || 0),
+          0
+        )
+      );
+    } else {
+      console.error("GitHub request failed:", response.status);
     }
-
-    const leetcodeData = await leetcodeResponse.json();
-
-    const user = leetcodeData?.data?.matchedUser;
-
-    if (!user) {
-      throw new Error("LeetCode user not found");
-    }
-
-    // -----------------------------
-    // Find C++ and Java counts
-    // -----------------------------
-    const languages = user.languageProblemCount || [];
-
-    const cpp = languages.find(
-      (lang) =>
-        lang.languageName.toLowerCase() === "cpp" ||
-        lang.languageName.toLowerCase() === "c++"
-    );
-
-    const java = languages.find(
-      (lang) => lang.languageName.toLowerCase() === "java"
-    );
-
-    // -----------------------------
-    // Send response
-    // -----------------------------
-    res.status(200).json({
-      github: {
-        repositories: githubRepos,
-        stars: githubStars,
-      },
-
-      leetcode: {
-        cpp: cpp?.problemsSolved || 0,
-        java: java?.problemsSolved || 0,
-        ranking: user.profile?.ranking || 0,
-        badges: user.badges?.length || 0,
-      },
-    });
   } catch (error) {
-    console.error("Stats API error:", error);
-
-    // Fallback values
-    res.status(200).json({
-      github: {
-        repositories: 8,
-        stars: 7,
-      },
-
-      leetcode: {
-        cpp: 417,
-        java: 417,
-        ranking: 76444,
-        badges: 4,
-      },
-
-      fallback: true,
-    });
+    console.error("GitHub error:", error);
   }
+
+  // -----------------------------
+  // LeetCode
+  // -----------------------------
+  try {
+    const query = `
+      query userStats($username: String!) {
+        matchedUser(username: $username) {
+          profile {
+            ranking
+          }
+
+          badges {
+            id
+          }
+
+          languageProblemCount {
+            languageName
+            problemsSolved
+          }
+        }
+      }
+    `;
+
+    const response = await fetch("https://leetcode.com/graphql/", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0",
+        Referer: "https://leetcode.com/",
+      },
+
+      body: JSON.stringify({
+        query,
+        variables: {
+          username: "Abhishek_12_89",
+        },
+      }),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+
+      const user = result?.data?.matchedUser;
+
+      if (user) {
+        const languages = user.languageProblemCount || [];
+
+        const cpp = languages.find(
+          (item) =>
+            item.languageName?.toLowerCase() === "c++"
+        );
+
+        const java = languages.find(
+          (item) =>
+            item.languageName?.toLowerCase() === "java"
+        );
+
+        if (cpp) {
+          stats.leetcodeCpp = String(cpp.problemsSolved);
+        }
+
+        if (java) {
+          stats.leetcodeJava = String(java.problemsSolved);
+        }
+
+        if (user.profile?.ranking) {
+          stats.leetcodeRank = Number(
+            user.profile.ranking
+          ).toLocaleString("en-IN");
+        }
+
+        if (user.badges) {
+          stats.leetcodeBadges = String(
+            user.badges.length
+          );
+        }
+      } else {
+        console.error("LeetCode user not found");
+      }
+    } else {
+      console.error(
+        "LeetCode request failed:",
+        response.status
+      );
+    }
+  } catch (error) {
+    console.error("LeetCode error:", error);
+  }
+
+  // -----------------------------
+  // Response
+  // -----------------------------
+
+  res.setHeader(
+    "Cache-Control",
+    "s-maxage=3600, stale-while-revalidate=86400"
+  );
+
+  return res.status(200).json({
+    ...stats,
+    updatedAt: new Date().toISOString(),
+  });
 }
