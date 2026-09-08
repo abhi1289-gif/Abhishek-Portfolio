@@ -1,16 +1,81 @@
-# React + Vite
+# Abhishek Sonparote — Developer Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A personal developer portfolio built with React and Vite.
 
-Currently, two official plugins are available:
+## 🌐 Live Website
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+https://abhishek-portfolio-ten-nu.vercel.app/
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Responsive portfolio website
+- About Me section
+- Skills and technologies
+- Featured projects
+- Live project demos
+- GitHub and LeetCode profiles
+- Dynamic GitHub and LeetCode coding statistics
+- Resume access
+- Contact section
+- Responsive mobile navigation
+- Scroll reveal animations
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Frontend
+- React
+- JavaScript
+- HTML
+- CSS
+- Vite
+
+### Backend / APIs
+- Node.js
+- Serverless API
+- GitHub API
+- LeetCode GraphQL
+
+### Deployment
+- Vercel
+- GitHub
+
+## 🚀 Projects
+
+### ProofTrack
+AI-assisted claim verification platform that analyzes claims against evidence collected from web sources.
+
+- [GitHub](https://github.com/abhi1289-gif/ProofTracker)
+- [Live Demo](https://prooftrack-zeta.vercel.app/)
+
+### FoodLoop
+Full-stack food redistribution platform connecting hotels, charities, and volunteers.
+
+- [GitHub](https://github.com/abhi1289-gif/FoodLoop)
+- [Live Demo](https://food-loop-1ldg.vercel.app/)
+
+### CampusConnect
+Full-stack academic collaboration platform for sharing resources, discussing subjects, and real-time communication.
+
+- [GitHub](https://github.com/abhi1289-gif/CampusConnect)
+- [Live Demo](https://campus-connect-theta-seven.vercel.app/)
+
+## 📊 Coding Profiles
+
+- GitHub: https://github.com/abhi1289-gif
+- LeetCode: https://leetcode.com/u/Abhishek_12_89/
+- GeeksForGeeks: https://www.geeksforgeeks.org/profile/abhisheksoe0gv
+
+## 📄 Resume
+
+The latest resume is available directly on the portfolio website.
+
+## 👨‍💻 About
+
+**Abhishek Sonparote**  
+BTech — Engineering Science  
+Indian Institute of Technology, Jodhpur  
+Graduation: 2028
+
+## 📬 Contact
+
+Email: abhisheksonparote6@gmail.com
